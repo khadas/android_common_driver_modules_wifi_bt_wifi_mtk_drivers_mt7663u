@@ -279,7 +279,9 @@ int kalDcSetWow(void)
 
 	glUsbSetState(&prGlueInfo->rHifInfo, USB_STATE_SUSPEND);
 	halDisableInterrupt(prGlueInfo->prAdapter);
+#if defined(_HIF_USB)
 	halTxCancelAllSending(prGlueInfo->prAdapter);
+#endif
 
 	wlanReleaseAllTxCmdQueue(prGlueInfo->prAdapter);
 

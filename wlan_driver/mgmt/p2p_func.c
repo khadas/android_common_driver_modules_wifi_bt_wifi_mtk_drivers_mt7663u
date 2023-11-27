@@ -52,6 +52,10 @@
 
 #include "precomp.h"
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 41) && defined (CONFIG_AMLOGIC_KERNEL_VERSION))
+#include <linux/upstream_version.h>
+#endif
+
 struct APPEND_VAR_ATTRI_ENTRY txAssocRspAttributesTable[] = {
 	{(P2P_ATTRI_HDR_LEN + P2P_ATTRI_MAX_LEN_STATUS), NULL,
 		p2pFuncAppendAttriStatusForAssocRsp}
@@ -2172,6 +2176,9 @@ void p2pFuncDfsSwitchCh(IN struct ADAPTER *prAdapter,
 				prP2PInfo->chandef
 #if (CFG_ADVANCED_80211_MLO == 1) || \
 	KERNEL_VERSION(6, 0, 0) <= CFG80211_VERSION_CODE
+				, 0
+#endif
+#if ((defined (AML_KERNEL_VERSION) && AML_KERNEL_VERSION >= 15) || LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
 				, 0
 #endif
 				);

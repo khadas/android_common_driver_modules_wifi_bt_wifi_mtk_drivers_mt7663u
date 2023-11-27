@@ -4,7 +4,7 @@
 # Common settings
 ##############################################################
 export MTK_COMBO_CHIP=MT7663
-export HIF=usb
+#export HIF=usb
 export CONFIG_MTK_WIFI_ONLY=m
 export CONFIG_MTK_COMBO=m
 export CONFIG_MTK_COMBO_WIFI=m
@@ -19,6 +19,14 @@ WIFI_TARGET := mt7663
 PWD=$(shell pwd)
 DRIVER_DIR=$(PWD)
 
+ifeq ($(CONFIG_MTK_SDIO),y)
+    HIF=sdio
+endif
+
+ifeq ($(CONFIG_MTK_USB),y)
+    HIF=usb
+endif
+
 ifeq ($(HIF),)
     HIF=usb
 endif
@@ -28,7 +36,7 @@ MODULE_NAME := wlan_$(WIFI_TARGET)_$(HIF)
 
 #/***** Special Settings for DTV start ******/
 export CONFIG_MTK_PREALLOC_MEMORY=y
-#export CONFIG_GKI_SUPPORT=y
+export CONFIG_GKI_SUPPORT=y
 CFG_POWER_OFF_CTRL_SUPPORT=n
 CFG_SUPPORT_MULTI_DONGLE=y
 CFG_SUPPORT_SINGLE_SKU_LOCAL_DB=0
@@ -84,6 +92,10 @@ $(warning =============================================)
 #/***** Common part ******/
 # Extend stack limit size to avoid build error
 PLATFORM_FLAGS += -Wframe-larger-than=1400
+
+#-Werror
+PLATFORM_FLAGS += -Wno-implicit-function-declaration
+PLATFORM_FLAGS += -Wno-unused-variable
 
 # Define maximum different channels supported for ieee80211_iface_combination setting.
 CFG_NUM_DIFFERENT_CHANNELS_STA=1

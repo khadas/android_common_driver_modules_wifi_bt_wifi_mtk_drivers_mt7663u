@@ -996,7 +996,9 @@ u_int8_t asicUsbSuspend(IN struct ADAPTER *prAdapter,
 
 	prGlueInfo->rHifInfo.state = USB_STATE_SUSPEND;
 	halDisableInterrupt(prGlueInfo->prAdapter);
+#if defined(_HIF_USB)
 	halTxCancelAllSending(prGlueInfo->prAdapter);
+#endif
 
 	ret = usb_control_msg(prGlueInfo->rHifInfo.udev,
 			      usb_sndctrlpipe(prGlueInfo->rHifInfo.udev, 0),

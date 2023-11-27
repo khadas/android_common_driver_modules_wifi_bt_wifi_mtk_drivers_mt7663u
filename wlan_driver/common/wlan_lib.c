@@ -862,8 +862,10 @@ uint32_t wlanAdapterStart(IN struct ADAPTER *prAdapter,
 			kal_fallthrough;
 		case DRIVER_OWN_FAIL:
 			nicReleaseAdapterMemory(prAdapter);
+#if defined(_HIF_USB)
 			/* stop TX BULK OUT URB */
 			halTxCancelAllSending(prAdapter);
+#endif
 			/* stop RX BULK IN URB */
 			halDisableInterrupt(prAdapter);
 			break;
@@ -915,6 +917,7 @@ uint32_t wlanAdapterStop(IN struct ADAPTER *prAdapter)
 
 #endif
 
+#if defined(_HIF_USB)
 	/*Waiting CompleteQ enqueue USB host*/
 
 	while (glUsbGetQueueSize(&prAdapter->prGlueInfo->rHifInfo,
@@ -931,6 +934,7 @@ uint32_t wlanAdapterStop(IN struct ADAPTER *prAdapter)
 			break;
 		}
 	}
+#endif
 
 	/* Hif power off wifi */
 

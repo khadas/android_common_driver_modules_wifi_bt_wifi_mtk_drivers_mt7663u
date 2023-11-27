@@ -4752,7 +4752,9 @@ void nicSerSyncTimerHandler(IN struct ADAPTER *prAdapter,
 		/* stop TX/RX */
 		nicSerStopTxRx(prAdapter);
 
+#if defined(_HIF_USB)
 		halTxCancelAllSending(prAdapter);
+#endif
 
 		halDisableInterrupt(prAdapter);
 

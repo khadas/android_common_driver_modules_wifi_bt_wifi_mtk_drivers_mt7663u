@@ -87,6 +87,10 @@
 #include <linux/ctype.h>
 #endif
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 41) && defined (CONFIG_AMLOGIC_KERNEL_VERSION))
+#include <linux/upstream_version.h>
+#endif
+
 /*******************************************************************************
  *                              C O N S T A N T S
  *******************************************************************************
@@ -2827,9 +2831,11 @@ static int32_t kalThreadSchedRetrieve(struct task_struct *pThread,
 
 	memcpy(&se, &pThread->se, sizeof(struct sched_entity));
 	kalGetLocalTime(&sec, &usec);
-#if KERNEL_VERSION(5, 16, 0) <= LINUX_VERSION_CODE
+#if !((defined (AML_KERNEL_VERSION) && AML_KERNEL_VERSION >= 15) || LINUX_VERSION_CODE >= KERNEL_VERSION(5, 16, 0))
+	/* for android u AML_KERNEL_VERSION = 8 */
 	stats = &pThread->stats;
 #else
+	/* for android t AML_KERNEL_VERSION = 15 */
 	stats = &pThread->se.statistics;
 #endif
 
@@ -5922,8 +5928,7 @@ void kalIndicateRxAssocToUpperLayer(struct net_device *prDevHandler,
 		rx_assoc_resp_data.len = u2FrameLen;
 		rx_assoc_resp_data.uapsd_queues = 0;
 		rx_assoc_resp_data.links[0].bss = bss;
-#if (CFG_ADVANCED_80211_MLO == 1) || \
-	KERNEL_VERSION(6, 2, 0) <= CFG80211_VERSION_CODE
+#if KERNEL_VERSION(6, 2, 0) <= CFG80211_VERSION_CODE
 		rx_assoc_resp_data.links[0].status = WLAN_STATUS_SUCCESS;
 #endif
 		if (prBssInfo && prBssInfo->eNetworkType == NETWORK_TYPE_AIS) {
@@ -6252,8 +6257,7 @@ static void kalProcessCfg80211RxPkt(struct PARAM_CFG80211_REQ *prCfg80211Req)
 		rx_assoc_resp_data.len = prCfg80211Req->frameLen;
 		rx_assoc_resp_data.uapsd_queues = 0;
 		rx_assoc_resp_data.links[0].bss = prCfg80211Req->bss;
-#if (CFG_ADVANCED_80211_MLO == 1) || \
-	KERNEL_VERSION(6, 2, 0) <= CFG80211_VERSION_CODE
+#if KERNEL_VERSION(6, 2, 0) <= CFG80211_VERSION_CODE
 		rx_assoc_resp_data.links[0].status = WLAN_STATUS_SUCCESS;
 #endif
 		if (prBssInfo && prBssInfo->eNetworkType == NETWORK_TYPE_AIS) {
@@ -8763,6 +8767,9 @@ void kalIndicateChannelSwitch(IN struct GLUE_INFO *prGlueInfo,
 	cfg80211_ch_switch_notify(prGlueInfo->prDevHandler, &chandef
 #if (CFG_ADVANCED_80211_MLO == 1) || \
 	KERNEL_VERSION(6, 0, 0) <= CFG80211_VERSION_CODE
+		, 0
+#endif
+#if ((defined (AML_KERNEL_VERSION) && AML_KERNEL_VERSION >= 15) || LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
 		, 0
 #endif
 		);
